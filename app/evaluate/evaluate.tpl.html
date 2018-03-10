@@ -1,0 +1,76 @@
+<div class="container evaluate">
+  <!-- This is the student info -->
+  <div class="well well-md">
+    <label class="col-md-4">
+      Name:
+      <span>{{user.U_FIRST_NAME}} {{user.U_LAST_NAME}}</span>
+    </label>
+    <label class="col-md-4">
+      Email:
+      <span>{{user.EMAIL_ID}}</span>
+    </label>
+    <label>
+      Mobile:
+      <span>{{user.MOB_NO}}</span>
+    </label>
+  </div>
+
+  <!-- Show alerts -->
+  <div ng-show="alerts.length > 0" ng-repeat="alert in alerts" class="alert alert-{{alert.type}} alert-dismissible">
+    <a href="" class="close" aria-label="close" ng-click="closeAlert($index)">&times;</a>
+    <strong>{{alert.scream | uppercase}}!</strong> {{alert.message}}
+  </div>
+
+  <!-- This is faculty and course ddl row -->
+  <div class="row">
+    <div class="col col-md-6">
+      <div class="form-group">
+        <label>Select Faculty</label>
+        <select class="form-control" ng-model="faculty" ng-change="changeFaculty()" ng-options="f.FACULTY_ID as (f.F_FIRST_NAME + ' ' + f.F_LAST_NAME) for f in faculties">
+        </select>
+      </div>
+    </div>
+    <div class="col col-md-6">
+      <div class="form-group">
+        <label>Select Course</label>
+        <select class="form-control" ng-show="courses.length > 0" ng-model="course" ng-change="changeCourse()" ng-options="c.COURSE_ID as c.COURSE_NAME for c in courses">
+        </select>
+        <input class="form-control" type="text" disabled value="No courses" ng-show="courses.length==0">
+      </div>
+    </div>
+  </div>
+
+  <!-- This is the topic table with ratings -->
+  <div class="row">
+    <div class="col col-md-12">
+      <table class="table table-bordered">
+        <thead>
+          <th>Topic ID</th>
+          <th>Topic Name</th>
+          <th>Topic Rating</th>
+        </thead>
+        <tbody>
+          <tr ng-repeat="topic in topics" ng-show="topics.length > 0">
+            <td>{{topic.TOPIC_ID}}</td>
+            <td>{{topic.TOPIC_NAME}}</td>
+            <td>
+              <span ng-repeat="x in [1,2,3,4,5,6,7,8,9,10]" ng-click="topic.rating = x" class="star-class glyphicon" ng-class="{'glyphicon-star': topic.rating >= x, 
+                              'glyphicon-star-empty': topic.rating < x,
+                              'star-disable': topic.rated}"></span>
+            </td>
+          </tr>
+          <tr ng-show="topics.length == 0">
+            <td colspan="3" style="text-align: center;">No topics</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col col-md-6 col-md-offset-6">
+      <button class="btn btn-primary pull-right" ng-click="submit()">Submit</button>
+    </div>
+  </div>
+
+</div>

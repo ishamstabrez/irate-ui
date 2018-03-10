@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="irate">
+<head>
+  <!-- meta tags for bootstrap and device render -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- favicon -->
+  <link rel="shortcut icon" href="assets/img/favicon.ico" type="image/x-icon">
+
+  <!-- title of the document -->
+  <title>iRate</title>
+
+  <!-- stylesheets -->
+  <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/css/custom.css">
+  <link rel="stylesheet" href="assets/css/irate.css">
+</head>
+<body  class="container" ng-class="{'body-bg':$state.current.name=='access' || $state.current.name=='register'}">
+
+  <nav class="navbar navbar-inverse navbar-fixed-top"> 
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#irate-navbar-collapse"
+          aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" ui-sref="dashboard">
+          <img src="assets/img/focus.jpeg" alt="iRate">
+        </a>
+      </div>
+      <div class="collapse navbar-collapse" id="irate-navbar-collapse" ng-controller="Access">
+        <form class="navbar-form navbar-right"  
+              ng-submit="accessGranted('login')"
+              ng-show="$state.current.name=='access'">
+          <div class="form-group input-group">
+            <div class="input-group-addon">
+              <i class="glyphicon glyphicon-user"></i>
+            </div>
+            <input class="form-control" type="text" ng-model='user.username' placeholder="username" />
+          </div>
+          <div class="form-group input-group">
+            <div class="input-group-addon">
+              <i class="glyphicon glyphicon-lock"></i>
+            </div>
+            <input class="form-control" type="password" ng-model='user.password' placeholder="password" />
+          </div>
+          <button type="submit" class="btn btn-default btn-lg btn-primary">Submit</button>
+        </form>
+        <ul class="nav navbar-nav navbar-right" ng-show="$state.current.name!='access'">
+          <li>
+            <a ng-click="logout()">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div ui-view></div>
+
+  <!-- vendor scripts -->
+  <script type="text/javascript" src="vendor/jquery.min.js"></script>
+  <script type="text/javascript" src="vendor/bootstrap.min.js"></script>
+  <script type="text/javascript" src="vendor/angular.min.js"></script>
+  <script type="text/javascript" src="vendor/angular-ui-router.min.js"></script>
+  <script type="text/javascript" src="vendor/underscore.min.js"></script>
+
+  <!-- app scripts -->
+  <script type="text/javascript" src="app/app.js"></script>
+  <script type="text/javascript" src="app/access/access.js"></script>
+  <script type="text/javascript" src="app/evaluate/evaluate.js"></script>
+
+  <!-- api scripts -->
+  <script type="text/javascript" src="api/access.js"></script>
+  <script type="text/javascript" src="api/faculty.js"></script>
+  <script type="text/javascript" src="api/course.js"></script>
+  <script type="text/javascript" src="api/topic.js"></script>
+  <script type="text/javascript" src="api/evaluate.js"></script>
+
+</body>
+</html>
