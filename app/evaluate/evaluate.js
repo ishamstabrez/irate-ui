@@ -5,14 +5,14 @@
     .module('irate')
     .controller('Evaluate', evaluate);
 
-  evaluate.$inject = ['$scope', 'Course', 'Faculty', 'Topic', 'Rating'];
-  function evaluate($scope, Course, Faculty, Topic, Rating) {
+  evaluate.$inject = ['$scope', 'Course', 'Faculty', 'Topic', 'Rating', '$rootScope'];
+  function evaluate($scope, Course, Faculty, Topic, Rating, $rootScope) {
     $('.active').removeClass('active');
     var allfaculties = [], allcourses = [], alltopics = [], allratings = [];
     $scope.alerts = [];
 
     function initialize() {
-      $scope.user = JSON.parse(window.localStorage.getItem('user'));
+      $rootScope.currentUser = JSON.parse(window.localStorage.getItem('user'));
       getFaculties();
     }
 
@@ -37,6 +37,7 @@
         .then(function (topics_response) {
           _.each(topics_response, function (t) {
             t.rating = 0;
+            t.checked=false;
           });
           alltopics = topics_response;
           getRatings();
@@ -74,6 +75,7 @@
       $scope.topics = [];
       _.each(alltopics, function (t) {
         t.rating = 0;
+        t.hoverRating = 0;
         t.rated = false;
         if (t.COURSE_ID === $scope.course) {
           $scope.topics.push(t);
@@ -84,7 +86,7 @@
 
     function updateRatings() {
       _.each(allratings, function (r) {
-        if (r.FACULTY_ID === $scope.faculty && r.COURSE_ID === $scope.course && r.USER_ID === $scope.user.USER_ID) {
+        if (r.FACULTY_ID === $scope.faculty && r.COURSE_ID === $scope.course && r.USER_ID === $rootScope.currentUser.USER_ID) {
           var topicIndex = _.indexOf($scope.topics, _.findWhere($scope.topics, {
             'TOPIC_ID': r.TOPIC_ID
           }));
@@ -98,7 +100,27 @@
           }
         }
       });
+
+      $scope.selectedTopic = $scope.topics[0];
+      $scope.selectedTopic.checked=true;
     }
+
+    $scope.getClassNames = function (topic, star) {
+      var classes = [];
+      if (topic.hoverRating >= star || topic.rating >= star) {
+        classes.push('glyphicon-star');
+      }
+
+      if (topic.hoverRating < star && topic.rating < star) {
+        classes.push('glyphicon-star-empty');
+      }
+
+      if (!topic.checked || topic.rated) {
+        classes.push('star-disable');
+      }
+
+      return classes;
+    };
 
     $scope.changeFaculty = function () {
       prepareCourses();
@@ -108,6 +130,21 @@
       prepareTopics();
     };
 
+    $scope.changeTopic = function (topic) {
+      $scope.selectedTopic = topic;
+      _.each($scope.topics, function (t) {
+        if (t.TOPIC_ID === topic.TOPIC_ID) {
+          t.checked = true;
+        } else {
+          t.checked = false;
+          if (!t.rated) {
+            t.rating = 0;
+            t.hoverRating = 0;
+          }
+        }
+      });
+    };
+
     $scope.submit = function () {
       var faculty = _.findWhere(allfaculties, {
         FACULTY_ID: $scope.faculty
@@ -115,16 +152,27 @@
       var course = _.findWhere(allcourses, {
         COURSE_ID: $scope.course
       });
-      var temp = [];
-      _.each($scope.topics, function (t) {
-        if (!t.rated && t.rating > 0) {
-          var str = 'faculty_id=' + faculty.FACULTY_ID + '&faculty_name=' + faculty.F_FIRST_NAME;
-          str = str + '&course_id=' + course.COURSE_ID + '&course_name=' + course.COURSE_NAME;
-          str = str + '&topic_id=' + t.TOPIC_ID + '&rating=' + t.rating + '&user_id=' + $scope.user.USER_ID;
-          temp.push(str);
+      var str, t = $scope.selectedTopic;
+      if (!t.rated && t.rating > 0 && t.checked) {
+        str = 'faculty_id=' + faculty.FACULTY_ID + '&faculty_name=' + faculty.F_FIRST_NAME;
+        str = str + '&course_id=' + course.COURSE_ID + '&course_name=' + course.COURSE_NAME;
+        str = str + '&topic_id=' + t.TOPIC_ID + '&rating=' + t.rating + '&user_id=' + $rootScope.currentUser.USER_ID;
+      } else {
+        var msg;
+        if (t.checked && t.rated) {
+          msg = 'You have already rated the selected topic';
         }
-      });
-      Rating.submitRatings(temp)
+        if (t.checked && t.rating === 0) {
+          msg = 'Rating should be atleast 1 star';
+        }
+        $scope.alerts.push({
+          type: 'danger',
+          scream: 'error',
+          message: msg
+        });
+        return;
+      }
+      Rating.submitRatings(str)
         .then(function () {
           $scope.alerts.push({
             type: 'success',
@@ -147,6 +195,7 @@
     if (window.localStorage.getItem('access_token')) {
       initialize();
     }
+
   }
 
 })();

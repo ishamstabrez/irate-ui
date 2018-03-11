@@ -25,25 +25,32 @@
       'controller': 'Evaluate',
       'resolve': {
         'token': ['$state', '$timeout', function ($state, $timeout) {
-          console.log(window.localStorage);
           if (!window.localStorage.getItem('access_token')) {
             $timeout(function () {
-              $state.go('access');
+              $state.go('login');
             });
           }
         }]
       }
     };
 
-    var accessState = {
-      'name': 'access',
-      'url': '/access',
+    var loginState = {
+      'name': 'login',
+      'url': '/login',
+      'templateUrl': 'app/access/access.tpl.html',
+      'controller': 'Access'
+    };
+
+    var registerState = {
+      'name': 'register',
+      'url': '/register',
       'templateUrl': 'app/access/access.tpl.html',
       'controller': 'Access'
     };
 
     $stateProvider.state(evaluateState);
-    $stateProvider.state(accessState);
+    $stateProvider.state(registerState);
+    $stateProvider.state(loginState);
   }
 
 })();
