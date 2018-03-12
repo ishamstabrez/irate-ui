@@ -89,13 +89,14 @@
               } else {
                 if (r === 'email') {
                   var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                  if (!re.test(r)) {
+
+                  if (!re.test(data[r])) {
                     wrongEmail = true;
                   }
                 }
                 if (r === 'mobile') {
                   var phoneno = /^\d{10}$/;
-                  if (!phoneno.test(r)) {
+                  if (!phoneno.test(data[r])) {
                     wrongPhone = true;
                   }
                 }
