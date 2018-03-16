@@ -40,15 +40,24 @@
             t.checked=false;
           });
           alltopics = topics_response;
-          getRatings();
+          getRatings('initialize');
         });
     }
 
-    function getRatings() {
+    function getRatings(param) {
       Rating.getRatings()
         .then(function (ratings_response) {
           allratings = ratings_response;
-          prepareVars();
+          switch (param) {
+            case 'initialize':
+              prepareVars();
+              break;
+            case 'submit':
+              updateRatings();
+              break;
+            default:
+              prepareVars();
+          }
         });
     }
 
@@ -77,11 +86,14 @@
         t.rating = 0;
         t.hoverRating = 0;
         t.rated = false;
+        t.checked = false;
         if (t.COURSE_ID === $scope.course) {
           $scope.topics.push(t);
         }
       });
-      updateRatings();
+      if($scope.topics.length > 0) {
+        updateRatings();
+      }
     }
 
     function updateRatings() {
@@ -179,6 +191,10 @@
             scream: 'success',
             message: 'Rating successfully submitted!'
           });
+          getRatings('submit');
+          window.setTimeout(function(){
+            $scope.$apply();
+          }, 100);
         }, function (err) {
           $scope.alerts.push({
             type: 'danger',
